@@ -65,9 +65,9 @@ node -e "const fs = require('fs'); fs.writeFileSync('./DEPS', fs.readFileSync('.
 gclient sync
 
 
-# echo "=====[ Patching V8 ]====="
-# git apply --cached $GITHUB_WORKSPACE/patches/builtins-puerts.patches
-# git checkout -- .
+echo "=====[ Patching V8 ]====="
+git apply --cached $GITHUB_WORKSPACE/patches/v8_monolithic_no_dyn_symbol.patch
+git checkout -- .
 
 echo "=====[ add ArrayBuffer_New_Without_Stl ]====="
 node $GITHUB_WORKSPACE/node-script/add_arraybuffer_new_without_stl.js .
@@ -107,12 +107,16 @@ else
     symbol_level=1
     use_custom_libcxx=false
     use_custom_libcxx_for_host=true
+    v8_expose_symbols=false
+    v8_enable_webassembly=false
+    v8_enable_lite_mode=true
+    v8_monolithic_no_dyn_symbol=true
     '
 fi
 ninja -C out.gn/arm.release -t clean
-ninja -v -C out.gn/arm.release wee8
-third_party/android_ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/strip -g -S -d --strip-debug --verbose out.gn/arm.release/obj/libwee8.a
+ninja -v -C out.gn/arm.release v8_monolith
+third_party/android_ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/strip -g -S -d --strip-debug --verbose out.gn/arm.release/obj/libv8_monolith.a
 
 mkdir -p output/v8/Lib/Android/armeabi-v7a
-cp out.gn/arm.release/obj/libwee8.a output/v8/Lib/Android/armeabi-v7a/
+cp out.gn/arm.release/obj/libv8_monolith.a output/v8/Lib/Android/armeabi-v7a/libwee8.a
 mkdir -p output/v8/Inc/Blob/Android/armv7a

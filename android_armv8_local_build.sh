@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VERSION=$1
-[ -z "$GITHUB_WORKSPACE" ] && GITHUB_WORKSPACE="$( cd "$( dirname "$0" )"/.. && pwd )"
+[ -z "$GITHUB_WORKSPACE" ] && GITHUB_WORKSPACE="$( cd "$( dirname "$0" )" && pwd )"
 
 if [ "$VERSION" == "10.6.194" ]; then 
     sudo apt-get install -y \
@@ -25,12 +25,11 @@ else
         curl \
         wget \
         build-essential \
-        python \
         xz-utils \
         zip
 fi
 
-cd ~
+cd .
 echo "=====[ Getting Depot Tools ]====="	
 git clone -q https://chromium.googlesource.com/chromium/tools/depot_tools.git
 if [ "$VERSION" != "10.6.194" ]; then 
@@ -49,9 +48,9 @@ cd v8
 echo "=====[ Fetching V8 ]====="
 fetch v8
 echo "target_os = ['android']" >> .gclient
-cd ~/v8/v8
-./build/install-build-deps-android.sh
-git checkout refs/tags/$VERSION
+cd v8
+# ./build/install-build-deps-android.sh
+# git checkout refs/tags/$VERSION
 
 echo "=====[ fix DEPS ]===="
 node -e "const fs = require('fs'); fs.writeFileSync('./DEPS', fs.readFileSync('./DEPS', 'utf-8').replace(\"Var('chromium_url') + '/external/github.com/kennethreitz/requests.git'\", \"'https://github.com/kennethreitz/requests'\"));"
@@ -59,7 +58,7 @@ node -e "const fs = require('fs'); fs.writeFileSync('./DEPS', fs.readFileSync('.
 gclient sync
 
 
-echo "=====[ Patching V8 ]====="
+ echo "=====[ Patching V8 ]====="
 git apply --cached $GITHUB_WORKSPACE/patches/v8_monolithic_no_dyn_symbol.patch
 git checkout -- .
 
@@ -112,5 +111,5 @@ ninja -v -C out.gn/arm64.release v8_monolith
 third_party/android_ndk/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/aarch64-linux-android/bin/strip -g -S -d --strip-debug --verbose out.gn/arm64.release/obj/libv8_monolith.a
 
 mkdir -p output/v8/Lib/Android/arm64-v8a
-cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/Android/arm64-v8a/libwee8.a
+cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/Android/arm64-v8a/
 mkdir -p output/v8/Inc/Blob/Android/arm64

@@ -21,9 +21,9 @@ cd ~/v8/v8
 git checkout refs/tags/$VERSION
 gclient sync
 
-# echo "=====[ Patching V8 ]====="
-# git apply --cached $GITHUB_WORKSPACE/patches/builtins-puerts.patches
-# git checkout -- .
+echo "=====[ Patching V8 ]====="
+git apply --cached $GITHUB_WORKSPACE/patches/v8_monolithic_no_dyn_symbol.patch
+git checkout -- .
 
 echo "=====[ add ArrayBuffer_New_Without_Stl ]====="
 node $GITHUB_WORKSPACE/node-script/add_arraybuffer_new_without_stl.js .
@@ -56,12 +56,16 @@ else
     target_cpu = "arm64"
     v8_enable_pointer_compression = false
     libcxx_abi_unstable = false
+    v8_expose_symbols=false
+    v8_enable_webassembly=false
+    v8_enable_lite_mode=true
+    v8_monolithic_no_dyn_symbol=true
     '
 fi
 ninja -C out.gn/arm64.release -t clean
-ninja -v -C out.gn/arm64.release wee8
-strip -S out.gn/arm64.release/obj/libwee8.a
+ninja -v -C out.gn/arm64.release v8_monolith
+strip -S out.gn/arm64.release/obj/libv8_monolith.a
 
 mkdir -p output/v8/Lib/iOS/arm64
-cp out.gn/arm64.release/obj/libwee8.a output/v8/Lib/iOS/arm64/
+cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/iOS/arm64/libwee8.a
 mkdir -p output/v8/Inc/Blob/iOS/arm64
