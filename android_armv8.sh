@@ -112,5 +112,5 @@ ninja -v -C out.gn/arm64.release v8_monolith
 third_party/android_ndk/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/aarch64-linux-android/bin/strip -g -S -d --strip-debug --verbose out.gn/arm64.release/obj/libv8_monolith.a
 
 mkdir -p output/v8/Lib/Android/arm64-v8a
-cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/Android/arm64-v8a/libwee8.a
+cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/Android/arm64-v8a/
 mkdir -p output/v8/Inc/Blob/Android/arm64

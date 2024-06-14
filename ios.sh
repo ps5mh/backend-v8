@@ -67,5 +67,5 @@ ninja -v -C out.gn/arm64.release v8_monolith
 strip -S out.gn/arm64.release/obj/libv8_monolith.a
 
 mkdir -p output/v8/Lib/iOS/arm64
-cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/iOS/arm64/libwee8.a
+cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/iOS/arm64/
 mkdir -p output/v8/Inc/Blob/iOS/arm64
