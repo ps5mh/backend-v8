@@ -72,7 +72,7 @@ call ninja -C out.gn\x64.release -t clean
 call ninja -v -C out.gn\x64.release v8_monolith
 
 md output\v8\Lib\Win64
-copy /Y out.gn\x64.release\obj\libv8_monolith.lib output\v8\Lib\Win64\
+copy /Y out.gn\x64.release\obj\v8_monolith.lib output\v8\Lib\Win64\
 md output\v8\Inc\Blob\Win64
 
 echo =====[ Copy V8 header ]=====

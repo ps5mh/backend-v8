@@ -69,11 +69,11 @@ if "%VERSION%"=="10.6.194" (
 )
 
 if "%VERSION%"=="9.4.146.24" (
-    call gn gen out.gn\x64.release -args="target_os=""win"" target_cpu=""x64"" v8_use_external_startup_data=false v8_enable_i18n_support=false is_debug=false v8_static_library=true is_clang=false strip_debug_info=true symbol_level=0 v8_enable_pointer_compression=false"
+    call gn gen out.gn\x64.release -args="target_os=""win"" target_cpu=""x64"" v8_use_external_startup_data=false v8_enable_i18n_support=false is_debug=false v8_static_library=true is_clang=false strip_debug_info=true symbol_level=0 v8_enable_pointer_compression=false v8_enable_webassembly=false v8_enable_lite_mode=true v8_monolithic=true"
 )
 call ninja -C out.gn\x64.release -t clean
-call ninja -v -C out.gn\x64.release wee8
+call ninja -v -C out.gn\x64.release v8_monolith
 
 md output\v8\Lib\Win64MD
-copy /Y out.gn\x64.release\obj\wee8.lib output\v8\Lib\Win64MD\
+copy /Y out.gn\x64.release\obj\v8_monolith.lib output\v8\Lib\Win64MD\
 md output\v8\Inc\Blob\Win64MD
