@@ -41,12 +41,12 @@ if [ "$VERSION" == "10.6.194" ]; then
 elif [ "$VERSION" == "11.8.172" ]; then
     gn gen out.gn/arm64.release --args="v8_use_external_startup_data=false v8_use_snapshot=true v8_enable_i18n_support=false is_debug=false v8_static_library=true ios_enable_code_signing= false target_os=\"ios\" target_cpu=\"arm64\" v8_enable_pointer_compression=false libcxx_abi_unstable=false v8_enable_sandbox=false use_custom_libcxx=false v8_enable_webassembly=false"
 else
-    gn gen out.gn/arm64.release --args="v8_use_external_startup_data=false v8_use_snapshot=true v8_enable_i18n_support=false is_debug=false v8_static_library=true ios_enable_code_signing=false target_os=\"ios\" target_cpu=\"arm64\" v8_enable_pointer_compression=false libcxx_abi_unstable=false"
+    gn gen out.gn/arm64.release --args="v8_use_external_startup_data=false v8_use_snapshot=true v8_enable_i18n_support=false is_debug=false v8_static_library=true ios_enable_code_signing=false target_os=\"ios\" target_cpu=\"arm64\" v8_enable_pointer_compression=false libcxx_abi_unstable=false v8_enable_webassembly=false v8_enable_lite_mode=true" 
 fi
 ninja -C out.gn/arm64.release -t clean
 mkdir -p output/v8/Lib/iOS/arm64
 
-ninja -v -C out.gn/arm64.release wee8
-cp out.gn/arm64.release/obj/libwee8.a output/v8/Lib/iOS/arm64/
+ninja -v -C out.gn/arm64.release v8_monolith
+cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/iOS/arm64/
 
 mkdir -p output/v8/Inc/Blob/iOS/arm64

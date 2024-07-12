@@ -56,6 +56,10 @@ git checkout refs/tags/$VERSION
 echo "=====[ fix DEPS ]===="
 node -e "const fs = require('fs'); fs.writeFileSync('./DEPS', fs.readFileSync('./DEPS', 'utf-8').replace(\"Var('chromium_url') + '/external/github.com/kennethreitz/requests.git'\", \"'https://github.com/kennethreitz/requests'\"));"
 
+echo "=====[ Patching V8 ]====="
+git apply --cached $GITHUB_WORKSPACE/patches/v8_monolithic_no_dyn_symbol.patch
+git checkout -- .
+
 gclient sync
 
 
@@ -76,14 +80,14 @@ echo "=====[ Building V8 ]====="
 if [ "$VERSION" == "10.6.194" -o "$VERSION" == "11.8.172" ]; then 
     gn gen out.gn/arm64.release --args="target_os=\"android\" target_cpu=\"arm64\" is_debug=false v8_enable_i18n_support=false v8_target_cpu=\"arm64\" use_goma=false v8_use_snapshot=true v8_use_external_startup_data=false v8_static_library=true strip_debug_info=false symbol_level=1 use_custom_libcxx=false use_custom_libcxx_for_host=true v8_enable_pointer_compression=false v8_enable_sandbox=false"
 else
-    gn gen out.gn/arm64.release --args="target_os=\"android\" target_cpu=\"arm64\" is_debug=false v8_enable_i18n_support=false v8_target_cpu=\"arm64\" use_goma=false v8_use_snapshot=true v8_use_external_startup_data=false v8_static_library=true strip_debug_info=false symbol_level=1 use_custom_libcxx=false use_custom_libcxx_for_host=true v8_enable_pointer_compression=false"
+    gn gen out.gn/arm64.release --args="target_os=\"android\" target_cpu=\"arm64\" is_debug=false v8_enable_i18n_support=false v8_target_cpu=\"arm64\" use_goma=false v8_use_snapshot=true v8_use_external_startup_data=false v8_static_library=true strip_debug_info=false symbol_level=1 use_custom_libcxx=false use_custom_libcxx_for_host=true v8_enable_pointer_compression=false v8_expose_symbols=false v8_enable_webassembly=false v8_enable_lite_mode=true v8_monolithic_no_dyn_symbol=true"
 fi
 ninja -C out.gn/arm64.release -t clean
-ninja -v -C out.gn/arm64.release wee8
+ninja -v -C out.gn/arm64.release v8_monolith
 if [ "$VERSION" == "9.4.146.24" ]; then 
-  third_party/android_ndk/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/aarch64-linux-android/bin/strip -g -S -d --strip-debug --verbose out.gn/arm64.release/obj/libwee8.a
+  third_party/android_ndk/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/aarch64-linux-android/bin/strip -g -S -d --strip-debug --verbose out.gn/arm64.release/obj/libv8_monolith.a
 fi
 
 mkdir -p output/v8/Lib/Android/arm64-v8a
-cp out.gn/arm64.release/obj/libwee8.a output/v8/Lib/Android/arm64-v8a/
+cp out.gn/arm64.release/obj/libv8_monolith.a output/v8/Lib/Android/arm64-v8a/
 mkdir -p output/v8/Inc/Blob/Android/arm64
