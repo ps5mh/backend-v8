@@ -1,0 +1,68 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 3e48fb11bff..a9612b2e622 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -342,6 +342,8 @@ declare_args() {
+ 
+   # Enable global allocation site tracking.
+   v8_allocation_site_tracking = true
++
++  v8_monolithic_no_dyn_symbol = false
+ }
+ 
+ # Derived defaults.
+@@ -5300,6 +5302,25 @@ if (v8_check_header_includes) {
+ # Produce a single static library for embedders
+ #
+ 
++if (v8_monolithic_no_dyn_symbol) {
++  # A component build is not monolithic.
++  assert(!is_component_build)
++  assert(!v8_expose_symbols)
++
++  # Using external startup data would produce separate files.
++  assert(!v8_use_external_startup_data)
++  v8_static_library("v8_monolith") {
++    deps = [
++      ":v8",
++      ":v8_libbase",
++      ":v8_libplatform",
++      "//build/win:default_exe_manifest",
++    ]
++
++    configs = [ ":internal_config" ]
++  }
++}
++
+ if (v8_monolithic) {
+   # A component build is not monolithic.
+   assert(!is_component_build)
+diff --git a/gni/v8.gni b/gni/v8.gni
+index a3346517978..45f6752397c 100644
+--- a/gni/v8.gni
++++ b/gni/v8.gni
+@@ -145,15 +145,15 @@ if (is_debug && !v8_optimized_debug) {
+   v8_remove_configs += [ "//build/config/compiler:default_optimization" ]
+   v8_add_configs += [ "//build/config/compiler:no_optimize" ]
+ } else {
+-  v8_remove_configs += [ "//build/config/compiler:default_optimization" ]
+-
+-  # TODO(crbug.com/621335) Rework this so that we don't have the confusion
+-  # between "optimize_speed" and "optimize_max".
+-  if (((is_posix && !is_android) || is_fuchsia) && !using_sanitizer) {
+-    v8_add_configs += [ "//build/config/compiler:optimize_speed" ]
+-  } else {
+-    v8_add_configs += [ "//build/config/compiler:optimize_max" ]
+-  }
++#  v8_remove_configs += [ "//build/config/compiler:default_optimization" ]
++#
++#  # TODO(crbug.com/621335) Rework this so that we don't have the confusion
++#  # between "optimize_speed" and "optimize_max".
++#  if (((is_posix && !is_android) || is_fuchsia) && !using_sanitizer) {
++#    v8_add_configs += [ "//build/config/compiler:optimize_speed" ]
++#  } else {
++#    v8_add_configs += [ "//build/config/compiler:optimize_max" ]
++#  }
+ }
+ 
+ if (!is_debug) {

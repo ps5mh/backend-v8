@@ -1,0 +1,84 @@
+diff --git a/src/execution/messages.cc b/src/execution/messages.cc
+index ad530e1f2a7..4cc257dcbec 100644
+--- a/src/execution/messages.cc
++++ b/src/execution/messages.cc
+@@ -781,6 +781,7 @@ Handle<String> RenderCallSite(Isolate* isolate, Handle<Object> object,
+         isolate, *location->shared());
+     UnoptimizedCompileState compile_state(isolate);
+     ParseInfo info(isolate, flags, &compile_state);
++#if 0 // [CHANGE]: `ParseAny` causes a crash when using bytecode.
+     if (parsing::ParseAny(&info, location->shared(), isolate,
+                           parsing::ReportStatisticsMode::kNo)) {
+       info.ast_value_factory()->Internalize(isolate);
+@@ -789,6 +790,7 @@ Handle<String> RenderCallSite(Isolate* isolate, Handle<Object> object,
+       *hint = printer.GetErrorHint();
+       if (str->length() > 0) return str;
+     }
++#endif
+   }
+   return BuildDefaultCallSite(isolate, object);
+ }
+@@ -840,6 +842,7 @@ Object ErrorUtils::ThrowSpreadArgError(Isolate* isolate, MessageTemplate id,
+         isolate, *location.shared());
+     UnoptimizedCompileState compile_state(isolate);
+     ParseInfo info(isolate, flags, &compile_state);
++#if 0 // [CHANGE]: `ParseAny` causes a crash when using bytecode.
+     if (parsing::ParseAny(&info, location.shared(), isolate,
+                           parsing::ReportStatisticsMode::kNo)) {
+       info.ast_value_factory()->Internalize(isolate);
+@@ -856,6 +859,8 @@ Object ErrorUtils::ThrowSpreadArgError(Isolate* isolate, MessageTemplate id,
+             MessageLocation(location.script(), pos, pos + 1, location.shared());
+       }
+     } else {
++#endif
++    {
+       callsite = BuildDefaultCallSite(isolate, object);
+     }
+   }
+@@ -916,6 +921,7 @@ Object ErrorUtils::ThrowLoadFromNullOrUndefined(Isolate* isolate,
+         isolate, *location.shared());
+     UnoptimizedCompileState compile_state(isolate);
+     ParseInfo info(isolate, flags, &compile_state);
++#if 0 // [CHANGE]: `ParseAny` causes a crash when using bytecode.
+     if (parsing::ParseAny(&info, location.shared(), isolate,
+                           parsing::ReportStatisticsMode::kNo)) {
+       info.ast_value_factory()->Internalize(isolate);
+@@ -953,6 +959,7 @@ Object ErrorUtils::ThrowLoadFromNullOrUndefined(Isolate* isolate,
+ 
+       if (str->length() > 0) callsite = str;
+     }
++#endif
+   }
+ 
+   if (callsite.is_null()) {
+diff --git a/src/snapshot/code-serializer.cc b/src/snapshot/code-serializer.cc
+index 3ccee83753a..257d77210bf 100644
+--- a/src/snapshot/code-serializer.cc
++++ b/src/snapshot/code-serializer.cc
+@@ -60,6 +60,9 @@ ScriptCompiler::CachedData* CodeSerializer::Serialize(
+   base::ElapsedTimer timer;
+   if (FLAG_profile_deserialization) timer.Start();
+   Handle<Script> script(Script::cast(info->script()), isolate);
++
++  Script::InitLineEnds(isolate, script); // [CHANGE]: Init line ends before serialize.
++
+   if (FLAG_trace_serializer) {
+     PrintF("[Serializing from");
+     script->name().ShortPrint();
+diff --git a/src/snapshot/serializer.cc b/src/snapshot/serializer.cc
+index 68fb1a01a69..02f268b1171 100644
+--- a/src/snapshot/serializer.cc
++++ b/src/snapshot/serializer.cc
+@@ -710,9 +710,12 @@ void Serializer::ObjectSerializer::Serialize() {
+   DCHECK(!object_->IsFreeSpaceOrFiller());
+ 
+   if (object_->IsScript()) {
++    // [CHANGE]: Do not remove line ends when saving the script object.
++#if 0
+     // Clear cached line ends.
+     Oddball undefined = ReadOnlyRoots(isolate()).undefined_value();
+     Handle<Script>::cast(object_)->set_line_ends(undefined);
++#endif
+   }
+ 
+   SerializeObject();
