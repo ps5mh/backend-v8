@@ -26,6 +26,7 @@ gclient sync
 # echo "=====[ Patching V8 ]====="
 # git apply --cached $GITHUB_WORKSPACE/patches/builtins-puerts.patches
 # git checkout -- .
+node $GITHUB_WORKSPACE/node-script/do-gitpatch.js -p $GITHUB_WORKSPACE/patches/sgame.patch
 
 if [ "$VERSION" == "11.8.172" ]; then 
   node $GITHUB_WORKSPACE/node-script/do-gitpatch.js -p $GITHUB_WORKSPACE/patches/remove_uchar_include_v11.8.172.patch
@@ -63,10 +64,7 @@ fi
 ninja -v -C out.gn/arm64.release v8
 
 mkdir -p output/v8/Lib/macOSdylib_arm64
-cp out.gn/arm64.release/libv8.dylib output/v8/Lib/macOSdylib_arm64/
-cp out.gn/arm64.release/libv8_libplatform.dylib output/v8/Lib/macOSdylib_arm64/
-cp out.gn/arm64.release/libv8_libbase.dylib output/v8/Lib/macOSdylib_arm64/
-cp out.gn/arm64.release/libchrome_zlib.dylib output/v8/Lib/macOSdylib_arm64/
+cp out.gn/arm64.release/*.dylib output/v8/Lib/macOSdylib_arm64/
 if [ "$VERSION" == "11.8.172" ]; then 
   cp out.gn/arm64.release/libthird_party_abseil-cpp_absl.dylib output/v8/Lib/macOSdylib_arm64/
 fi

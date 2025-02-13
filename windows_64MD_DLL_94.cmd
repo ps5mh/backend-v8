@@ -7,6 +7,7 @@ powershell -command "Invoke-WebRequest https://storage.googleapis.com/chrome-inf
 7z x depot_tools.zip -o*
 set PATH=%CD%\depot_tools;%PATH%
 set GYP_MSVS_VERSION=2019
+set "GYP_MSVS_OVERRIDE_PATH=C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 call gclient
 
@@ -33,6 +34,7 @@ call gclient sync
 @REM node %GITHUB_WORKSPACE%\CRLF2LF.js %GITHUB_WORKSPACE%\patches\builtins-puerts.patches
 @REM call git apply --cached --reject %GITHUB_WORKSPACE%\patches\builtins-puerts.patches
 @REM call git checkout -- .
+node %~dp0\node-script\do-gitpatch.js -p "%GITHUB_WORKSPACE%\patches\sgame.patch"
 
 if "%VERSION%"=="10.6.194" (
     echo =====[ patch 10.6.194 ]=====

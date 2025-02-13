@@ -1,0 +1,43 @@
+diff --git a/src/objects/swiss-hash-table-helpers.h b/src/objects/swiss-hash-table-helpers.h
+index 98a1abd39df..77f0a75e9c3 100644
+--- a/src/objects/swiss-hash-table-helpers.h
++++ b/src/objects/swiss-hash-table-helpers.h
+@@ -15,6 +15,9 @@
+ 
+ #ifndef V8_OBJECTS_SWISS_HASH_TABLE_HELPERS_H_
+ #define V8_OBJECTS_SWISS_HASH_TABLE_HELPERS_H_
++// make x64 bytecode compatible with arm64
++#define SWISS_TABLE_HAVE_SSE2 0
++#define SWISS_TABLE_HAVE_SSSE3 0
+ 
+ // The following #defines are taken from Abseil's have_sse.h (but renamed). They
+ // are only defined within this file. However, we also take cross platform
+diff --git a/src/parsing/parser.cc b/src/parsing/parser.cc
+index a541734bdd0..bb0c726bd42 100644
+--- a/src/parsing/parser.cc
++++ b/src/parsing/parser.cc
+@@ -926,11 +926,12 @@ FunctionLiteral* Parser::DoParseFunction(Isolate* isolate, ParseInfo* info,
+       if (IsAsyncFunction(kind)) {
+         DCHECK(!scanner()->HasLineTerminatorAfterNext());
+         if (!Check(Token::ASYNC)) {
+-          CHECK(stack_overflow());
++          // try fix crash when: async () => { this.b() }
++          DCHECK(stack_overflow());
+           return nullptr;
+         }
+         if (!(peek_any_identifier() || peek() == Token::LPAREN)) {
+-          CHECK(stack_overflow());
++          DCHECK(stack_overflow());
+           return nullptr;
+         }
+       }
+@@ -999,7 +1000,8 @@ FunctionLiteral* Parser::DoParseFunction(Isolate* isolate, ParseInfo* info,
+         DCHECK(expression->IsFunctionLiteral());
+         result = expression->AsFunctionLiteral();
+       }
+-    } else if (IsDefaultConstructor(kind)) {
++    } else
++    if (IsDefaultConstructor(kind)) {
+       DCHECK_EQ(scope(), outer);
+       result = DefaultConstructor(raw_name, IsDerivedConstructor(kind),
+                                   start_position, end_position);

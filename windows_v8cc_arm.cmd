@@ -6,6 +6,7 @@ powershell -command "Invoke-WebRequest https://storage.googleapis.com/chrome-inf
 7z x depot_tools.zip -o*
 set PATH=%CD%\depot_tools;%PATH%
 set GYP_MSVS_VERSION=2019
+set "GYP_MSVS_OVERRIDE_PATH=C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 call gclient
 
