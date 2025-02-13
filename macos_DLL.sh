@@ -55,6 +55,7 @@ elif [ "$VERSION" == "10.6.194" ]; then
     gn gen out.gn/x64.release --args="is_debug=false v8_enable_i18n_support=false v8_use_snapshot=true v8_use_external_startup_data=false is_component_build=true strip_debug_info=true symbol_level=0 libcxx_abi_unstable=false v8_enable_pointer_compression=false v8_enable_sandbox=false $CXX_SETTING"
 else
     gn gen out.gn/x64.release --args="is_debug=false v8_enable_i18n_support=false v8_use_snapshot=true v8_use_external_startup_data=false is_component_build=true strip_debug_info=true symbol_level=0 libcxx_abi_unstable=false v8_enable_pointer_compression=false  $CXX_SETTING"
+    node %~dp0\node-script\do-gitpatch.js -p "%GITHUB_WORKSPACE%\patches\x64_arm64_unify.patch"
 fi
 
 ninja -C out.gn/x64.release -t clean
