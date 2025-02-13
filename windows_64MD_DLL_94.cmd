@@ -33,6 +33,8 @@ call gclient sync
 @REM node %GITHUB_WORKSPACE%\CRLF2LF.js %GITHUB_WORKSPACE%\patches\builtins-puerts.patches
 @REM call git apply --cached --reject %GITHUB_WORKSPACE%\patches\builtins-puerts.patches
 @REM call git checkout -- .
+node %~dp0\node-script\do-gitpatch.js -p "%GITHUB_WORKSPACE%\patches\x64_arm64_unify.patch"
+
 
 if "%VERSION%"=="10.6.194" (
     echo =====[ patch 10.6.194 ]=====

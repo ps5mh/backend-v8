@@ -1,0 +1,14 @@
+diff --git a/src/objects/swiss-hash-table-helpers.h b/src/objects/swiss-hash-table-helpers.h
+index 98a1abd39df..ad1ab028dd1 100644
+--- a/src/objects/swiss-hash-table-helpers.h
++++ b/src/objects/swiss-hash-table-helpers.h
+@@ -16,6 +16,9 @@
+ #ifndef V8_OBJECTS_SWISS_HASH_TABLE_HELPERS_H_
+ #define V8_OBJECTS_SWISS_HASH_TABLE_HELPERS_H_
+ 
++#define SWISS_TABLE_HAVE_SSE2 0
++#define SWISS_TABLE_HAVE_SSSE3 0
++
+ // The following #defines are taken from Abseil's have_sse.h (but renamed). They
+ // are only defined within this file. However, we also take cross platform
+ // snapshot creation into account, by only using SSE if the target supports it,
