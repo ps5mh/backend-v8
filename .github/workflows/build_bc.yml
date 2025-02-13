@@ -28,7 +28,6 @@ on:
 
 jobs:        
   build_windows_md_dll:
-    if: github.event.inputs.build_windows == 'true'
     name: Windows-MD-DLL
     runs-on: windows-2019
     steps:
@@ -50,7 +49,6 @@ jobs:
         path: ~/v8/v8/output/**/*
         
   build_macos_dll:
-    if: github.event.inputs.build_macos == 'true'
     name: macOS-DLL
     runs-on: macos-13
     steps:
