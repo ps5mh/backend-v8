@@ -33,6 +33,8 @@ call gclient sync
 @REM node %GITHUB_WORKSPACE%\CRLF2LF.js %GITHUB_WORKSPACE%\patches\builtins-puerts.patches
 @REM call git apply --cached --reject %GITHUB_WORKSPACE%\patches\builtins-puerts.patches
 @REM call git checkout -- .
+node %~dp0\node-script\do-gitpatch.js -p "%GITHUB_WORKSPACE%\patches\x64_arm64_unify.patch"
+
 
 if "%VERSION%"=="10.6.194" (
     echo =====[ patch 10.6.194 ]=====
@@ -85,7 +87,6 @@ if "%VERSION%"=="10.6.194" (
 
 if "%VERSION%"=="9.4.146.24" (
     call gn gen out.gn\x64.release -args="target_os=""win"" target_cpu=""x64"" v8_use_external_startup_data=false v8_enable_i18n_support=false is_debug=false %CXX_SETTING% strip_debug_info=true symbol_level=0 v8_enable_pointer_compression=false is_component_build=true"
-    node %~dp0\node-script\do-gitpatch.js -p "%GITHUB_WORKSPACE%\patches\x64_arm64_unify.patch"
 )
 
 call ninja -C out.gn\x64.release -t clean
