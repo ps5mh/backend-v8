@@ -232,7 +232,7 @@ jobs:
   build_macos_dll:
     if: github.event.inputs.build_macos == 'true'
     name: macOS-DLL
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
     - uses: actions/setup-python@v5
       with:
